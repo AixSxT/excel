@@ -22,6 +22,11 @@ const App = () => {
     [onDrop, reactFlowInstance]
   );
 
+  const isValidConnection = useCallback(
+    (connection) => connection?.source !== connection?.target,
+    []
+  );
+
   return (
     <div className="app">
       <Header />
@@ -38,6 +43,7 @@ const App = () => {
             onInit={setReactFlowInstance}
             onDrop={handleDrop}
             onDragOver={onDragOver}
+            isValidConnection={isValidConnection}
             fitView
           >
             <Controls />

@@ -9,28 +9,9 @@ const createId = () => {
   return `node_${Date.now()}_${Math.random().toString(16).slice(2)}`;
 };
 
-const buildInitialNodes = () => [
-  { id: 'start-1', type: 'start', position: { x: 120, y: 180 }, data: { label: 'Start' } },
-  { id: 'llm-1', type: 'llm', position: { x: 360, y: 160 }, data: { model: 'gpt-4', prompt: '' } },
-  { id: 'output-1', type: 'output', position: { x: 620, y: 180 }, data: { result: 'Result' } },
-];
+const buildInitialNodes = () => [];
 
-const buildInitialEdges = () => [
-  {
-    id: 'e-start-llm',
-    source: 'start-1',
-    target: 'llm-1',
-    sourceHandle: 'start-out',
-    targetHandle: 'llm-in',
-  },
-  {
-    id: 'e-llm-output',
-    source: 'llm-1',
-    target: 'output-1',
-    sourceHandle: 'llm-out',
-    targetHandle: 'output-in',
-  },
-];
+const buildInitialEdges = () => [];
 
 const useFlowStore = create((set, get) => ({
   nodes: buildInitialNodes(),
