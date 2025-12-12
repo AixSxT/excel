@@ -1,29 +1,29 @@
-import React, { useState } from 'react';
+﻿import React from 'react';
 import { Position } from 'reactflow';
 import BaseNode from './BaseNode';
+import useFlowStore from '../store/useFlowStore';
 
-const ExcelUploadNode = ({ data = {}, selected }) => {
+const ExcelUploadNode = ({ id, data = {}, selected }) => {
   const handles = [{ id: 'excel-upload-out', type: 'source', position: Position.Bottom }];
-  const [fileName, setFileName] = useState(data.fileName || 'No file selected');
-  const onChange = data.onChange || (() => {});
+  const updateNodeData = useFlowStore((state) => state.updateNodeData);
 
   const handleFileChange = (event) => {
     const file = event.target.files && event.target.files[0];
-    if (file) {
-      setFileName(file.name);
-      onChange({ ...data, fileName: file.name });
-    }
+    if (!file) return;
+    updateNodeData?.(id, { fileName: file.name });
   };
+
+  const fileName = data.fileName || '未选择文件';
 
   return (
     <BaseNode
-      title={<span style={{ color: '#10b981' }}>Excel Upload</span>}
+      title={<span style={{ color: '#10b981' }}>{data.label || 'Excel读取'}</span>}
       selected={selected}
       handles={handles}
     >
       <div className="node-field">
-        <label className="node-label" htmlFor="excel-file">
-          Upload Excel
+        <label className="node-label" htmlFor={`excel-file-${id}`}>
+          上传Excel
         </label>
         <div
           className="upload-dropzone"
@@ -34,12 +34,17 @@ const ExcelUploadNode = ({ data = {}, selected }) => {
             background: 'rgba(16, 185, 129, 0.05)',
           }}
         >
-          <input id="excel-file" type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
+          <input
+            id={`excel-file-${id}`}
+            type="file"
+            accept=".xlsx, .xls"
+            onChange={handleFileChange}
+          />
           <div className="upload-hint" style={{ fontSize: 12, color: '#9bb5ff', marginTop: 6 }}>
-            Drop file here or click to browse
+            拖拽文件到此处，或点击选择
           </div>
         </div>
-        <div className="upload-filename" style={{ fontSize: 12, marginTop: 8, color: '#e8ecf2' }}>
+        <div className="upload-filename" style={{ fontSize: 12, marginTop: 8, color: '#d9e4ff' }}>
           {fileName}
         </div>
       </div>

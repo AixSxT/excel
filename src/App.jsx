@@ -4,6 +4,8 @@ import 'reactflow/dist/style.css';
 import Header from './components/Header';
 import FlowToolbar from './components/FlowToolbar';
 import NodeDrawer from './components/NodeDrawer';
+import Inspector from './components/Inspector';
+import ExampleStrip from './components/ExampleStrip';
 import useDragDrop from './hooks/useDragDrop';
 import nodeTypes from './nodes';
 import useFlowStore from './store/useFlowStore';
@@ -19,6 +21,9 @@ const App = () => {
   const onConnect = useFlowStore((state) => state.onConnect);
   const storeOnReconnect = useFlowStore((state) => state.onReconnect);
   const deleteEdge = useFlowStore((state) => state.deleteEdge);
+  const selectedNodeId = useFlowStore((state) => state.selectedNodeId);
+  const setSelectedNode = useFlowStore((state) => state.setSelectedNode);
+  const clearSelection = useFlowStore((state) => state.clearSelection);
 
   const { onDragOver, onDrop } = useDragDrop();
 
@@ -69,6 +74,18 @@ const App = () => {
   const openDrawer = useCallback(() => setDrawerOpen(true), []);
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
+  const onSelectionChange = useCallback(
+    ({ nodes: selectedNodes }) => {
+      const nextId = selectedNodes?.[0]?.id || null;
+      setSelectedNode?.(nextId);
+    },
+    [setSelectedNode]
+  );
+
+  const onPaneClick = useCallback(() => {
+    clearSelection?.();
+  }, [clearSelection]);
+
   return (
     <div className="app">
       <Header />
@@ -88,14 +105,21 @@ const App = () => {
             onReconnectStart={onReconnectStart}
             onReconnect={onReconnect}
             onReconnectEnd={onReconnectEnd}
+            onSelectionChange={onSelectionChange}
+            onPaneClick={onPaneClick}
             fitView
           >
             <Controls />
-            <Background />
+            <Background variant="dots" gap={18} size={1} color="#e2e8f0" />
           </ReactFlow>
 
           <FlowToolbar onOpenNodeDrawer={openDrawer} />
           <NodeDrawer open={drawerOpen} onClose={closeDrawer} />
+          <ExampleStrip />
+
+          {selectedNodeId ? (
+            <Inspector nodeId={selectedNodeId} onClose={() => setSelectedNode?.(null)} />
+          ) : null}
         </div>
       </div>
     </div>

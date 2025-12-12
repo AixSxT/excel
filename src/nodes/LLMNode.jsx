@@ -1,39 +1,40 @@
-// LLM node: chooses a model and captures a system prompt; uses BaseNode for styling.
+﻿// LLM node: chooses a model and captures a system prompt; uses BaseNode for styling.
 import React from 'react';
 import { Position } from 'reactflow';
 import BaseNode from './BaseNode';
+import useFlowStore from '../store/useFlowStore';
 
 const modelOptions = [
   { value: 'gpt-4', label: 'GPT-4' },
   { value: 'claude', label: 'Claude' },
 ];
 
-const LLMNode = ({ data = {}, selected }) => {
+const LLMNode = ({ id, data = {}, selected }) => {
   const handles = [
     { id: 'llm-in', type: 'target', position: Position.Top },
     { id: 'llm-out', type: 'source', position: Position.Bottom },
   ];
 
-  const onChange = data.onChange || (() => {});
+  const updateNodeData = useFlowStore((state) => state.updateNodeData);
 
   const handleModelChange = (event) => {
     const nextModel = event.target.value;
-    onChange({ ...data, model: nextModel });
+    updateNodeData?.(id, { model: nextModel });
   };
 
   const handlePromptChange = (event) => {
     const nextPrompt = event.target.value;
-    onChange({ ...data, prompt: nextPrompt });
+    updateNodeData?.(id, { prompt: nextPrompt });
   };
 
   return (
-    <BaseNode title="LLM" selected={selected} handles={handles}>
+    <BaseNode title={data.label || 'AI智能处理'} selected={selected} handles={handles}>
       <div className="node-field">
-        <label className="node-label" htmlFor="llm-model">
-          Model
+        <label className="node-label" htmlFor={`llm-model-${id}`}>
+          模型
         </label>
         <select
-          id="llm-model"
+          id={`llm-model-${id}`}
           value={data.model || modelOptions[0].value}
           onChange={handleModelChange}
         >
@@ -46,15 +47,15 @@ const LLMNode = ({ data = {}, selected }) => {
       </div>
 
       <div className="node-field">
-        <label className="node-label" htmlFor="llm-prompt">
-          System Prompt
+        <label className="node-label" htmlFor={`llm-prompt-${id}`}>
+          系统提示词
         </label>
         <textarea
-          id="llm-prompt"
+          id={`llm-prompt-${id}`}
           rows={3}
           value={data.prompt || ''}
           onChange={handlePromptChange}
-          placeholder="e.g., You are a helpful assistant..."
+          placeholder="例如：你是一个严格的数据清洗助手..."
         />
       </div>
     </BaseNode>

@@ -44,6 +44,10 @@ const defaultLabelsByType = {
 const useFlowStore = create((set, get) => ({
   nodes: [],
   edges: [],
+  selectedNodeId: null,
+
+  setSelectedNode: (id) => set({ selectedNodeId: id }),
+  clearSelection: () => set({ selectedNodeId: null }),
 
   onNodesChange: (changes) =>
     set((state) => ({
@@ -70,6 +74,16 @@ const useFlowStore = create((set, get) => ({
       edges: state.edges.filter((edge) => edge.id !== id),
     })),
 
+  updateNodeData: (id, updater) =>
+    set((state) => ({
+      nodes: state.nodes.map((node) => {
+        if (node.id !== id) return node;
+        const nextData =
+          typeof updater === 'function' ? updater(node.data || {}) : updater;
+        return { ...node, data: { ...(node.data || {}), ...(nextData || {}) } };
+      }),
+    })),
+
   addNode: (type, position, data = {}) => {
     const id = createId();
     const defaultLabel = defaultLabelsByType[type];
@@ -87,7 +101,7 @@ const useFlowStore = create((set, get) => ({
     return id;
   },
 
-  resetFlow: () => set({ nodes: [], edges: [] }),
+  resetFlow: () => set({ nodes: [], edges: [], selectedNodeId: null }),
 
   getState: () => get(),
 }));
