@@ -1,14 +1,16 @@
-import React, { useCallback, useRef, useState } from 'react';
+﻿import React, { useCallback, useRef, useState } from 'react';
 import ReactFlow, { Background, Controls } from 'reactflow';
 import 'reactflow/dist/style.css';
 import Header from './components/Header';
-import Sidebar from './components/Sidebar';
+import FlowToolbar from './components/FlowToolbar';
+import NodeDrawer from './components/NodeDrawer';
 import useDragDrop from './hooks/useDragDrop';
 import nodeTypes from './nodes';
 import useFlowStore from './store/useFlowStore';
 
 const App = () => {
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const nodes = useFlowStore((state) => state.nodes);
   const edges = useFlowStore((state) => state.edges);
@@ -64,11 +66,13 @@ const App = () => {
     [deleteEdge]
   );
 
+  const openDrawer = useCallback(() => setDrawerOpen(true), []);
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+
   return (
     <div className="app">
       <Header />
       <div className="app-body">
-        <Sidebar />
         <div className="flow-wrapper">
           <ReactFlow
             nodes={nodes}
@@ -89,6 +93,9 @@ const App = () => {
             <Controls />
             <Background />
           </ReactFlow>
+
+          <FlowToolbar onOpenNodeDrawer={openDrawer} />
+          <NodeDrawer open={drawerOpen} onClose={closeDrawer} />
         </div>
       </div>
     </div>

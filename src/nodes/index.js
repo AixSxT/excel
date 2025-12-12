@@ -8,6 +8,7 @@ import TableNode from './TableNode';
 export const nodeTypes = {
   start: StartNode,
   llm: LLMNode,
+  'ai-process': LLMNode,
   output: OutputNode,
   'excel-upload': ExcelUploadNode,
   'table-preview': TableNode,
